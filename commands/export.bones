@@ -91,6 +91,11 @@ command.options['scale'] = {
     'description': 'Scale factor'
 };
 
+command.options['tileSize'] = {
+    'title': 'tileSize=[num]',
+    'description': 'tileSize in pixels'
+};
+
 command.options['concurrency'] = {
     'title': 'concurrency=[num]',
     'description': 'Number of exports that can be run concurrently.',
@@ -170,6 +175,8 @@ command.prototype.initialize = function(plugin, callback) {
         opts.metatile = parseInt(opts.metatile, 10);
     if (!_(opts.scale).isUndefined())
         opts.scale = parseInt(opts.scale, 10);
+    if (!_(opts.tileSize).isUndefined())
+        opts.tileSize = parseInt(opts.tileSize, 10);
 
     // Rename the output filepath using a random hash if file already exists.
     if (existsSync(opts.filepath) &&
@@ -224,6 +231,7 @@ command.prototype.initialize = function(plugin, callback) {
             maxzoom: !_(opts.maxzoom).isUndefined() ? opts.maxzoom : model.get('maxzoom'),
             bounds: !_(opts.bbox).isUndefined() ? opts.bbox : model.get('bounds'),
             scale: !_(opts.scale).isUndefined() ? opts.scale : model.get('scale'),
+            tileSize: !_(opts.tileSize).isUndefined() ? opts.tileSize : model.get('tileSize'),
             metatile: !_(opts.metatile).isUndefined() ? opts.metatile : model.get('metatile')
         });
 
@@ -410,6 +418,8 @@ command.prototype.tilelive = function (project, callback) {
     } else {
         if (!cmd.opts.quiet) console.warn('Creating new job ' + opts.job);
 
+        console.log(project.mml.tileSize)
+
         var from = {
             protocol: 'mapnik:',
             slashes: true,
@@ -418,7 +428,8 @@ command.prototype.tilelive = function (project, callback) {
             pathname: path.join(opts.files, 'project', project.id, project.id + '.xml'),
             query: {
                 metatile: project.mml.metatile,
-                scale: project.mml.scale
+                scale: project.mml.scale,
+                tileSize: project.mml.tileSize
             }
         };
 
